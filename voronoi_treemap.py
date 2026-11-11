@@ -151,6 +151,11 @@ def solve_weights(sites, targets, boundary, w0=None, history=None):
     after each optimiser iteration (used for the convergence plot in the primer).
     """
     w0 = np.zeros(len(sites)) if w0 is None else w0
+    # The cells always fill the boundary, so the targets must add up to its
+    # area. If they do not, no weights can satisfy them and F has no maximum:
+    # the optimiser would push every weight towards infinity.
+    if not np.isclose(np.sum(targets), polygon_area(boundary), rtol=1e-9):
+        raise ValueError("targets must sum to the area of the boundary")
 
     def record(w):
         if history is not None:

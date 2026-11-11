@@ -76,3 +76,10 @@ def test_equal_weights_reproduce_scipy_voronoi():
 def test_second_moment_of_unit_square_about_its_corner():
     # integral of x^2 + y^2 over [0,1]^2 = 2/3
     assert vt.second_moment(SQUARE, np.zeros(2)) == pytest.approx(2 / 3)
+
+
+def test_targets_that_do_not_fill_the_boundary_are_rejected():
+    """Areas must add up to the region; otherwise the problem has no solution."""
+    sites = vt.random_points_in(SQUARE, 4, np.random.default_rng(0))
+    with pytest.raises(ValueError):
+        vt.solve_weights(sites, np.full(4, 0.2), SQUARE)      # sums to 0.8, square has area 1
